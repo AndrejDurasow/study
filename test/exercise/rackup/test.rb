@@ -10,6 +10,10 @@ class RackTest < Test::Unit::TestCase
       browser.get '/hello'
       assert browser.last_response.ok?
       assert_equal 'Hello World', browser.last_response.body
+ 
+      browser.get '/hi'
+      assert browser.last_response.ok?
+      assert_equal 'Hello', browser.last_response.body
   end
 
   def test_it_pongs

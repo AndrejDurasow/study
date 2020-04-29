@@ -6,14 +6,15 @@ module Inatra
     end
 
     def call(env)
-      method = env['REQUEST_METHOD'].to_s.downcase
+      method = env['REQUEST_METHOD'].downcase
       path = env['PATH_INFO']
+    p @route
       @route[method][path].call
     end
 
-    def method_missing(method_name, *arg, &block)
+    def method_missing(method_name, *args, &block)
       method = method_name.to_s
-      path = arg.first
+      path = args.first
       @route[method] = {}
       @route[method][path] = block
     end
