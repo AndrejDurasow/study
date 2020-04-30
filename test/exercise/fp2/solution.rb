@@ -14,22 +14,30 @@ module Exercise
 
       # Написать свою функцию my_map
       def my_map
-        res = MyArray.new
-        self.my_each { |el| res << yield(el)}
-        res
+        result = MyArray.new
+        self.my_reduce(result) { |res, el| res << yield(el) }
+        result
       end
 
       # Написать свою функцию my_compact
       def my_compact
-        res = MyArray.new
-        self.my_each { |el| res << el unless el.nil? }
-        res
+        result = MyArray.new
+        self.my_reduce(result) do |res, el|
+          unless el.nil?
+            res << el
+          end
+          res
+        end
+        result
       end
 
       # Написать свою функцию my_reduce
-      def my_reduce(res = 0)
-        self.my_each { |el| res = res.nil? ? el : yield(res, el) }
-        res
+      def my_reduce(acc = nil, &func)
+        return acc if empty?
+
+        first_el, *rest = self
+        acc = acc.nil? ? first_el : func.call(acc, first_el)
+        MyArray.new(rest).my_reduce(acc, &func)
       end
     end
   end
