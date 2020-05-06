@@ -1,22 +1,25 @@
 module Inatra
+  @handlers = {}
   class << self
+
     def routes(&block)
-      @route = {}
       instance_eval(&block)
     end
 
     def call(env)
-      method = env['REQUEST_METHOD'].downcase
-      path = env['PATH_INFO']
-    p @route
-      @route[method][path].call
+      handle(env['REQUEST_METHOD'], env['PATH_INFO'])
     end
 
-    def method_missing(method_name, *args, &block)
-      method = method_name.to_s
-      path = args.first
-      @route[method] = {}
-      @route[method][path] = block
+  
+    def method_missing(method_name, path, &block)
+      @handlers[method_name] ||= {}
+      @handlers[method_name][path] = block
+    end
+
+    def handle(method, path)
+      handler = @handlers.dig(method.downcase.to_sym, path)
+      return [404, {}, ['Not Found']] unless handler
+      handler.call
     end
   end
 end
