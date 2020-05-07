@@ -5,30 +5,31 @@ module Exercise
       # Использовать свои написанные функции для реализации следующих - можно.
 
       # Написать свою функцию my_each
-      def my_each
-        for el in self
-          yield el
-        end
+      def my_each(acc = MyArray.new([]), &func)
+        first, *tail = self
+        acc << first
 
+        yield first
+
+        if tail.empty?
+          acc
+        else
+          MyArray.new(tail).my_each(acc, &func)
+        end
       end
 
       # Написать свою функцию my_map
       def my_map
         result = MyArray.new
-        self.my_reduce(result) { |res, el| res << yield(el) }
+        my_reduce(result) { |res, el| res << yield(el) }
         result
       end
 
       # Написать свою функцию my_compact
       def my_compact
-        result = MyArray.new
-        self.my_reduce(result) do |res, el|
-          unless el.nil?
-            res << el
-          end
-          res
+        my_reduce(MyArray.new) do |res, el|
+          el.nil? ? res : res << el
         end
-        result
       end
 
       # Написать свою функцию my_reduce
@@ -38,7 +39,7 @@ module Exercise
         first_el, *rest = self
         acc = acc.nil? ? first_el : func.call(acc, first_el)
         MyArray.new(rest).my_reduce(acc, &func)
+        end
       end
     end
   end
-end
